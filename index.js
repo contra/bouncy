@@ -3,6 +3,8 @@ var https = require('https');
 var through = require('through');
 var parseArgs = require('./lib/parse_args.js');
 var insert = require('./lib/insert');
+var fixer = require('./lib/fixer');
+
 var nextTick = typeof setImmediate !== 'undefined'
     ? setImmediate
     : process.nextTick
@@ -83,7 +85,7 @@ module.exports = function (opts, cb) {
             dst.on('error', destroy);
             
             var s = args.headers || args.method || args.path
-                ? src.pipe(insert(args))
+                ? src.pipe(insert(args)).pipe(fixer(args))
                 : src
             ;
             s.pipe(dst).pipe(req.connection);
